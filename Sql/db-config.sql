@@ -17,31 +17,31 @@
 --     PRIMARY KEY (id),
 --     UNIQUE KEY email (email)
 -- );
-CREATE TABLE busnEmps (
-    id int NOT NULL AUTO_INCREMENT,
-    empId VARCHAR(255) NOT NULL,
-    busnId VARCHAR(255) NOT NULL,
-    PRIMARY KEY (id),
-    INDEX empsAndBusns (empId, busnId),
-    FOREIGN KEY (empId) 
-        REFERENCES emps(id)
-        ON DELETE CASCADE,
-    FOREIGN KEY (busnId) 
-        REFERENCES busns(id)
-        ON DELETE CASCADE
-);
-CREATE TABLE empTimes (
-    id int NOT NULL AUTO_INCREMENT,
-    empId VARCHAR(255) NOT NULL,
-    busnId VARCHAR(255) NOT NULL,
-    clockIn BIGINT(20) NOT NULL,
-    clockOut BIGINT(20),
-    PRIMARY KEY (id),
-    INDEX empsAndBusns (empId, busnId),
-    FOREIGN KEY (empId) 
-        REFERENCES emps(id)
-        ON DELETE CASCADE,
-    FOREIGN KEY (busnId) 
-        REFERENCES busns(id)
-        ON DELETE CASCADE
-);
+-- CREATE TABLE busnEmps (
+--     id int NOT NULL AUTO_INCREMENT,
+--     empId VARCHAR(255) NOT NULL,
+--     busnId VARCHAR(255) NOT NULL,
+--     PRIMARY KEY (id),
+--     INDEX empsAndBusns (empId, busnId),
+--     FOREIGN KEY (empId) 
+--         REFERENCES emps(id)
+--         ON DELETE CASCADE,
+--     FOREIGN KEY (busnId) 
+--         REFERENCES busns(id)
+--         ON DELETE CASCADE
+-- );
+-- CREATE TABLE empTimes (
+--     id int NOT NULL AUTO_INCREMENT,
+--     empId VARCHAR(255) NOT NULL,
+--     busnId VARCHAR(255) NOT NULL,
+--     clockIn BIGINT(20) NOT NULL,
+--     clockOut BIGINT(20),
+--     PRIMARY KEY (id),
+--     INDEX empsAndBusns (empId, busnId),
+--     FOREIGN KEY (empId) 
+--         REFERENCES emps(id)
+--         ON DELETE CASCADE,
+--     FOREIGN KEY (busnId) 
+--         REFERENCES busns(id)
+--         ON DELETE CASCADE
+-- );

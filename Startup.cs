@@ -1,23 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
+using GlobalExceptionHandler.WebApi;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using MySql.Data.MySqlClient;
+using time.Repositories;
 
 namespace time
 {
     public class Startup
     {
+        private readonly string _connectionString = "";
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+            _connectionString = configuration.GetSection("DB").GetValue<string>("mySQLConnectionString");
         }
 
         public IConfiguration Configuration { get; }
@@ -25,7 +32,25 @@ namespace time
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddCors(options =>
+            {
+                options.AddPolicy("CorsDevPolicy", builder =>
+                {
+                    builder.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin().AllowCredentials();
+                });
+            });
+            services.AddMvc();
+
+            services.AddTransient<IDbConnection>(x => CreateDBContext());
+            services.AddTransient<BusinessRepository>();
+            services.AddTransient<EmployeeRepository>();
+        }
+
+        private IDbConnection CreateDBContext()
+        {
+            var connection = new MySqlConnection(_connectionString);
+            connection.Open();
+            return connection;
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -34,13 +59,24 @@ namespace time
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseCors("CorsDevPolicy");
             }
             else
             {
                 app.UseHsts();
             }
-
-            app.UseHttpsRedirection();
+            app.UseAuthentication();
+            app.UseDefaultFiles();
+            app.UseStaticFiles();
+            app.UseExceptionHandler("/Error").WithConventions(o =>
+           {
+               o.ForException<Exception>().ReturnStatusCode(401).UsingMessageFormatter((ex, ctx, task) =>
+               {
+                   ctx.Response.ContentType = "application/json";
+                   ctx.Response.WriteAsync(ex.Message);
+                   return Task.CompletedTask;
+               });
+           });
             app.UseMvc();
         }
     }

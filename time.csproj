@@ -9,7 +9,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="dapper" Version="1.50.5" />
+    <PackageReference Include="globalexceptionhandler" Version="3.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="MySqlConnector" Version="0.46.1" />
   </ItemGroup>
 
 </Project>
