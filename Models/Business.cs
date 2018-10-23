@@ -2,14 +2,22 @@ using System.ComponentModel.DataAnnotations;
 
 namespace time.Models
 {
-    public class NewBusiness
+    public class BusinessLogin
+    {
+        [Required]
+        public string Email { get; set; }
+        
+        [Required]
+        public string Password { get; set; }
+    }
+    public class BusinessRegistration
     {
         [Required]
         public string Name { get; set; }
 
         [Required]
         public string Email { get; set; }
-        
+
         [Required]
         public float Lat { get; set; }
 
