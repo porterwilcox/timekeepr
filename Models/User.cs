@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace time.Models
 {
-    public class EmployeeLogin
+    public class UserLogin
     {
         [Required]
         [EmailAddress]
@@ -11,7 +11,7 @@ namespace time.Models
         [Required]
         public string Password { get; set; }
     }
-    public class EmployeeRegistration
+    public class UserRegistration
     {
         [Required]
         public string FirstName { get; set; }
@@ -26,9 +26,8 @@ namespace time.Models
         [Required]
         public string Password { get; set; }
     }
-    public class Employee
+    public class User
     {
-        [Required]
         public string Id { get; set; }
 
         [Required]
@@ -43,5 +42,11 @@ namespace time.Models
 
         [Required]
         public string Hash { get; set; }
+
+        [Required]
+        public int isEmployee { get; set; } = 0;
+
+        [Required]
+        public int isManager { get; set; } = 0;
     }
 }

@@ -1,47 +1,63 @@
--- CREATE TABLE emps (
+-- CREATE TABLE users (
 --     id VARCHAR(255) NOT NULL,
 --     firstName VARCHAR(50) NOT NULL,
 --     lastName VARCHAR(50) NOT NULL,
 --     email VARCHAR(150) NOT NULL,
 --     hash VARCHAR(255) NOT NULL,
+--     isEmployee tinyint,
+--     isManager tinyint,
 --     PRIMARY KEY (id),
 --     UNIQUE KEY email (email)
 -- );
--- CREATE TABLE busns (
+
+-- CREATE TABLE businesses (
 --     id VARCHAR(255) NOT NULL,
 --     name VARCHAR(50) NOT NULL,
---     email VARCHAR(150) NOT NULL,
---     hash VARCHAR(255) NOT NULL,
 --     lat FLOAT(11, 7) NOT NULL,
 --     lng FLOAT(11, 7) NOT NULL,
---     PRIMARY KEY (id),
---     UNIQUE KEY email (email)
+--     PRIMARY KEY (id)
 -- );
--- CREATE TABLE busnEmps (
+
+-- CREATE TABLE businessEmployees (
 --     id int NOT NULL AUTO_INCREMENT,
---     empId VARCHAR(255) NOT NULL,
---     busnId VARCHAR(255) NOT NULL,
+--     employeeId VARCHAR(255) NOT NULL,
+--     businessId VARCHAR(255) NOT NULL,
 --     PRIMARY KEY (id),
---     INDEX empsAndBusns (empId, busnId),
---     FOREIGN KEY (empId) 
---         REFERENCES emps(id)
+--     INDEX employeesAndBusinesses (employeeId, businessId),
+--     FOREIGN KEY (employeeId) 
+--         REFERENCES users(id)
 --         ON DELETE CASCADE,
---     FOREIGN KEY (busnId) 
---         REFERENCES busns(id)
+--     FOREIGN KEY (businessId) 
+--         REFERENCES businesses(id)
 --         ON DELETE CASCADE
 -- );
--- CREATE TABLE empTimes (
+
+-- CREATE TABLE businessManagers (
 --     id int NOT NULL AUTO_INCREMENT,
---     empId VARCHAR(255) NOT NULL,
---     busnId VARCHAR(255) NOT NULL,
+--     managerId VARCHAR(255) NOT NULL,
+--     businessId VARCHAR(255) NOT NULL,
+--     PRIMARY KEY (id),
+--     INDEX managersAndBusinesses (managerId, businessId),
+--     FOREIGN KEY (managerId) 
+--         REFERENCES users(id)
+--         ON DELETE CASCADE,
+--     FOREIGN KEY (businessId) 
+--         REFERENCES businesses(id)
+--         ON DELETE CASCADE
+-- );
+
+-- CREATE TABLE employeeTimes (
+--     id int NOT NULL AUTO_INCREMENT,
+--     employeeId VARCHAR(255) NOT NULL,
+--     businessId VARCHAR(255) NOT NULL,
 --     clockIn BIGINT(20) NOT NULL,
 --     clockOut BIGINT(20),
 --     PRIMARY KEY (id),
---     INDEX empsAndBusns (empId, busnId),
---     FOREIGN KEY (empId) 
---         REFERENCES emps(id)
+--     INDEX employeesAndBusinesses (employeeId, businessId),
+--     FOREIGN KEY (employeeId) 
+--         REFERENCES users(id)
 --         ON DELETE CASCADE,
---     FOREIGN KEY (busnId) 
---         REFERENCES busns(id)
+--     FOREIGN KEY (businessId) 
+--         REFERENCES businesses(id)
 --         ON DELETE CASCADE
 -- );
