@@ -21,6 +21,11 @@
 --     PRIMARY KEY (id)
 -- );
 
+-- ALTER TABLE businesses ADD COLUMN pin VARCHAR(50) AFTER lng;
+-- ALTER TABLE businesses ADD UNIQUE KEY (pin);
+-- ALTER TABLE businesses ADD COLUMN managerId VARCHAR(255) AFTER id;
+-- DROP TABLE businessManagers;
+
 -- CREATE TABLE businessEmployees (
 --     id int NOT NULL AUTO_INCREMENT,
 --     employeeId VARCHAR(255) NOT NULL,
