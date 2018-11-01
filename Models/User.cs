@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Security.Claims;
 
 namespace time.Models
 {
@@ -48,5 +50,19 @@ namespace time.Models
 
         [Required]
         public int isManager { get; set; } = 0;
+
+        //Authentication below
+        internal ClaimsPrincipal _principal { get; private set; }
+
+
+        internal void SetClaims()
+        {
+            var claims = new List<Claim>{
+                new Claim(ClaimTypes.Name, Id),
+                new Claim(ClaimTypes.Email, Email)
+            };
+            var userIdentity = new ClaimsIdentity(claims, "login");
+            _principal = new ClaimsPrincipal(userIdentity);
+        }
     }
 }

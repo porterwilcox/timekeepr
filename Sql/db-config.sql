@@ -10,6 +10,9 @@
 --     UNIQUE KEY email (email)
 -- );
 
+-- ALTER TABLE users ALTER isEmployee SET DEFAULT 0;
+-- ALTER TABLE users ALTER isManager SET DEFAULT 0;
+
 -- CREATE TABLE businesses (
 --     id VARCHAR(255) NOT NULL,
 --     name VARCHAR(50) NOT NULL,

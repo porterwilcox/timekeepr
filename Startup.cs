@@ -55,7 +55,7 @@ namespace time
 
             services.AddTransient<IDbConnection>(x => CreateDBContext());
             services.AddTransient<BusinessRepository>();
-            services.AddTransient<EmployeeRepository>();
+            services.AddTransient<UserRepository>();
         }
 
         private IDbConnection CreateDBContext()

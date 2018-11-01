@@ -11,36 +11,44 @@ namespace time.Repositories
     {
         IDbConnection _db;
 
-        public User Login(UserLogin empLogin)
+        public User Login(UserLogin userLogin)
         {
-            User emp = _db.Query<User>(@"SELECT * FROM emps
-                WHERE email = @Email;", new { empLogin }).FirstOrDefault();
-            if (emp == null) return null;
-            bool validPass = BCrypt.Net.BCrypt.Verify(empLogin.Password, emp.Hash);
+            User user = _db.Query<User>(@"SELECT * FROM users
+                WHERE email = @Email;", new { userLogin }).FirstOrDefault();
+            if (user == null) return null;
+            bool validPass = BCrypt.Net.BCrypt.Verify(userLogin.Password, user.Hash);
             if (!validPass) return null;
-            emp.Hash = null;
-            return emp;
+            user.Hash = null;
+            return user;
         }
 
-        public User Register(UserRegistration empReg)
+        public User Register(UserRegistration userReg)
         {
             string id = Guid.NewGuid().ToString();
-            string hash = BCrypt.Net.BCrypt.HashPassword(empReg.Password);
-            User emp = _db.ExecuteScalar<User>(@"INSERT INTO emps
+            string hash = BCrypt.Net.BCrypt.HashPassword(userReg.Password);
+            User user = _db.ExecuteScalar<User>(@"INSERT INTO users
                 (id, firstName, lastName, email, hash)
                 VALUES (@id, @firstName, @lastName, @email, @hash);
-                SELECT * FROM emps WHERE id = @id", new {
+                SELECT * FROM users WHERE id = @id", new {
                     id,
-                    firstName = empReg.FirstName,
-                    lastName = empReg.LastName,
-                    email = empReg.Email,
+                    firstName = userReg.FirstName,
+                    lastName = userReg.LastName,
+                    email = userReg.Email,
                     hash
                 });
-            if (emp == null) return null;
-            emp.Hash = null;
-            return emp;
+            if (user == null) return null;
+            user.Hash = null;
+            return user;
         }
 
+        internal User GetUserById(string id)
+        {
+            User user = _db.Query<User>(@"SELECT FROM users 
+                WHERE id = @id;", new {id}).FirstOrDefault();
+            if (user == null) return null;
+            user.Hash = null;
+            return user;
+        }
 
         public UserRepository(IDbConnection db)
         {
