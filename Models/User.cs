@@ -4,6 +4,22 @@ using System.Security.Claims;
 
 namespace time.Models
 {
+    public class UserTime
+    {
+        public int Id { get; set; }
+
+        [Required]
+        public string EmployeeId { get; set; }
+    
+        [Required]
+        public string BusinessId { get; set; }
+
+        [Required]
+        public long ClockIn { get; set; }
+
+        public long ClockOut { get; set; } = 0;
+    }
+
     public class UserLogin
     {
         [Required]

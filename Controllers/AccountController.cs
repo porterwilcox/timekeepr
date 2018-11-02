@@ -11,14 +11,13 @@ namespace time.Controllers
     [Route("[controller]")]
     public class AccountController : Controller
     {
-        private readonly UserRepository _userRepo;
-        private readonly BusinessRepository _busnRepo;
+        private readonly UserRepository _repo;
 
         [HttpPost("Login")]
         public async Task<User> Login([FromBody] UserLogin creds)
         {
             if (!ModelState.IsValid) throw new Exception("Invalid information");
-            User user = _userRepo.Login(creds);
+            User user = _repo.Login(creds);
             if (user == null) throw new Exception("No user with that email and password combination");
             user.SetClaims();
             await HttpContext.SignInAsync(user._principal);
@@ -29,7 +28,7 @@ namespace time.Controllers
         public async Task<User> Register([FromBody] UserRegistration creds)
         {
             if (!ModelState.IsValid) throw new Exception("Invalid information");
-            User user = _userRepo.Register(creds);
+            User user = _repo.Register(creds);
             if (user == null) throw new Exception("Unable to create new user account.");
             user.SetClaims();
             await HttpContext.SignInAsync(user._principal);
@@ -41,12 +40,11 @@ namespace time.Controllers
         public User Authenticate()
         {
             var id = HttpContext.User.Identity.Name;
-            return _userRepo.GetUserById(id);
+            return _repo.GetUserById(id);
         }
-        public AccountController(UserRepository userRepo, BusinessRepository busnRepo)
+        public AccountController(UserRepository repo)
         {
-            _userRepo = userRepo;
-            _busnRepo = busnRepo;
+            _repo = repo;
         }
     }
 }

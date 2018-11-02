@@ -29,13 +29,14 @@ namespace time.Repositories
             User user = _db.ExecuteScalar<User>(@"INSERT INTO users
                 (id, firstName, lastName, email, hash)
                 VALUES (@id, @firstName, @lastName, @email, @hash);
-                SELECT * FROM users WHERE id = @id", new {
-                    id,
-                    firstName = userReg.FirstName,
-                    lastName = userReg.LastName,
-                    email = userReg.Email,
-                    hash
-                });
+                SELECT * FROM users WHERE id = @id", new
+            {
+                id,
+                firstName = userReg.FirstName,
+                lastName = userReg.LastName,
+                email = userReg.Email,
+                hash
+            });
             if (user == null) return null;
             user.Hash = null;
             return user;

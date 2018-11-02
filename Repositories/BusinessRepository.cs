@@ -30,18 +30,6 @@ namespace time.Repositories
             return busn;
         }
 
-        public IEnumerable<User> GetEmployeesByBusiness(string busnId)
-        {
-            var emps = _db.Query<User>(@"SELECT * FROM businessEmployees be
-            INNER JOIN users e ON e.id = be.employeeId
-            WHERE businessId = @busnId;", new { busnId });
-            if (emps == null) return null;
-            foreach (User emp in emps)
-            {
-                emp.Hash = null;
-            }
-            return emps;
-        }
 
         public Business GetBusinessByManager(string managerId)
         {
@@ -56,15 +44,35 @@ namespace time.Repositories
             if (business == null) return null;
             int success = _db.Execute(@"INSERT INTO businessEmployees
                 (employeeId, businessId)
-                VALUES (@employeeId, @businessId);", new { 
-                    employeeId = empRegToBusn.UserId,
-                    businessId = business.Id
-                 });
+                VALUES (@employeeId, @businessId);", new
+            {
+                employeeId = empRegToBusn.UserId,
+                businessId = business.Id
+            });
             if (success != 1) return null;
             business.Pin = null;
-            business.ManagerId = null;
             return business;
         }
+
+        internal IEnumerable<User> GetEmployeesByBusinessId(string businessId)
+        {
+            var users = _db.Query<User>(@"SELECT * FROM businessEmployees be
+                INNER JOIN users ON users.id = be.employeeId
+                WHERE businessId = @businessId;", new { businessId });
+            foreach (User user in users)
+            {
+                user.Hash = null;
+            }
+            return users;
+        }
+
+        internal IEnumerable<UserTime> GetTimesForEmployee(string employeeId)
+        //WILL NEED TO REFACTOR IF WANT TO INCLUDE OPTION FOR RETRIEVING ONLY DATA FOR SPECIFIC COMPANY
+        {
+            return _db.Query<UserTime>(@"SELECT * FROM employeeTimes
+                WHERE employeeId = @employeeId;", new { employeeId });
+        }
+
 
         public BusinessRepository(IDbConnection db)
         {
