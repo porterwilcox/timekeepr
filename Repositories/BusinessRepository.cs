@@ -30,11 +30,21 @@ namespace time.Repositories
             return busn;
         }
 
-
         public Business GetBusinessByManager(string managerId)
         {
             return _db.Query<Business>(@"SELECT * FROM businesses
                 WHERE managerId = @managerId", new { managerId }).FirstOrDefault();
+        }
+
+        public Business GetBusinessByEmployee(string employeeId)
+        {
+            Business business = _db.Query<Business>(@"SELECT * FROM businessEmployees be
+                INNER JOIN businesses b ON b.id = be.businessId
+                WHERE employeeId = @employeeId;", new { employeeId }).FirstOrDefault();
+            if (business != null) {
+                business.Pin = null;
+            }
+            return business;
         }
 
         public Business AddEmployeeToBusiness(EmployeeRegisterToBusiness empRegToBusn)
@@ -66,13 +76,30 @@ namespace time.Repositories
             return users;
         }
 
-        internal IEnumerable<UserTime> GetTimesForEmployee(string employeeId)
+        internal UserTime CreateClockIn(UserTime time)
+        {
+            int id = _db.ExecuteScalar<int>(@"INSERT INTO employeeTimes 
+                (employeeId, businessId, clockIn, clockOut)
+                VALUES (@EmployeeId, @BusinessId, @ClockIn, @ClockOut);
+                SELECT LAST_INSERT_ID();", time);
+            time.Id = id;
+            return time;
+        }
+
+        internal bool CreateClockOut(UserTime time)
+        {
+            int success = _db.Execute(@"UPDATE employeeTimes 
+                SET clockOut = @ClockOut
+                WHERE id = @Id;", time);
+            return success == 1;
+        }
+
+        internal IEnumerable<UserTime> GetAllTimesForEmployee(string employeeId)
         //WILL NEED TO REFACTOR IF WANT TO INCLUDE OPTION FOR RETRIEVING ONLY DATA FOR SPECIFIC COMPANY
         {
             return _db.Query<UserTime>(@"SELECT * FROM employeeTimes
                 WHERE employeeId = @employeeId;", new { employeeId });
         }
-
 
         public BusinessRepository(IDbConnection db)
         {
