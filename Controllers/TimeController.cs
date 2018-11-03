@@ -49,13 +49,27 @@ namespace time.Controllers
         }
 
         [HttpPost]
-        [Route("clockin")]
+        [Route("employee/clockin")]
         public UserTime CreateClockIn([FromBody] UserTime time)
         {
             if (!ModelState.IsValid) throw new Exception("Invalid information");
             return _repo.CreateClockIn(time);
         }
 
+        [HttpPost]
+        [Route("employee/clockout")]
+        public bool CreateClockOut([FromBody]UserTime time)
+        {
+            if (!ModelState.IsValid) throw new Exception("Invalid Information.");
+            return _repo.CreateClockOut(time);
+        }
+
+        [HttpGet]
+        [Route("employee/times/{employeeId}")]
+        public IEnumerable<UserTime> GetAllTimesForEmployee([FromRoute] string employeeId)
+        {
+            return _repo.GetAllTimesForEmployee(employeeId);
+        }
 
         public TimeController(BusinessRepository repo)
         {
