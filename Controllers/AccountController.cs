@@ -42,6 +42,15 @@ namespace time.Controllers
             var id = HttpContext.User.Identity.Name;
             return _repo.GetUserById(id);
         }
+
+        [HttpDelete("Logout")]
+        public async Task<bool> Logout()
+        {
+            await HttpContext.SignOutAsync();
+            return true;
+        }
+
+        
         public AccountController(UserRepository repo)
         {
             _repo = repo;
