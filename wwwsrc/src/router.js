@@ -4,6 +4,7 @@ import Home from './views/Home.vue'
 import Login from './views/Login.vue'
 import EmployeeRegister from './views/EmployeeRegister.vue'
 import BusinessRegister from './views/BusinessRegister.vue'
+import Employee from './views/Employee.vue'
 
 Vue.use(Router)
 
@@ -28,6 +29,12 @@ export default new Router({
       path: '/business-register',
       name: 'businessRegister',
       component: BusinessRegister
+    },
+    {
+      path: 'employee/:eId',
+      name: 'employee',
+      props: true,
+      component: Employee
     }
   ]
 })

@@ -37,6 +37,11 @@
 <script>
 export default {
   name: "business-register",
+  mounted() {
+    if (!this.$store.state.user.id) {
+      this.$router.push({ name: "login" });
+    }
+  },
   data() {
     return {
       haveLocation: false,

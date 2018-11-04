@@ -12,12 +12,40 @@
       </div>
     </div>
     <div v-if="!user.isEmployee && !user.isManager" class="row h65 mt5 choices">
-      <div @click="empReg()" class="col-10 col-md-5 offset-md-0 bg-light d-flex justify-content-center choice1 align-items-center">
+      <div @click="empReg()" class="col-10 col-md-5 offset-md-0 bg-light clickable d-flex justify-content-center choice1 align-items-center">
         <h3>Join a business as an employee</h3>
       </div>
-      <div @click="busnReg()" class="col-10 col-md-5 offset-md-0  bg-dark text-white d-flex justify-content-center choice2 align-items-center">
+      <div @click="busnReg()" class="col-10 col-md-5 offset-md-0  bg-dark text-white clickable d-flex justify-content-center choice2 align-items-center">
         <h3>Register a new business as the manager</h3>
       </div>
+    </div>
+    <div v-else-if="!user.isEmployee" class="row h65 mt5">
+      <div class="col-10 offset-1 col-md-8 offset-md-2">
+        <h2>Hello, {{business.name}}.</h2>
+        <h4 v-if="employees.length">Share your pin - <span class="clickable" v-if="show" @click="show = !show"><b>{{business.pin}}</b></span> <span class="clickable" v-if="!show" @click="show = !show"><b>Show Pin</b></span> - with other employees so they can join {{business.name}}, too.</h4>
+      </div>
+      <div v-if="!employees.length" class="col-10 offset-1 col-md-8 offset-md-2">
+        <h4>You don't have any employee's on TimeKeepr registered under your company.</h4>
+        <h4>Share your pin - <span class="clickable" v-if="show" @click="show = !show"><b>{{business.pin}}</b></span> <span class="clickable" v-if="!show" @click="show = !show"><b>Show Pin</b></span> - with your employees so they can join {{business.name}}.</h4>
+      </div>
+      <div v-else class="col-10 offset-1 col-md-8 offset-md-2">
+        <h2>Your employees: </h2>
+        <div class="row justify-content-around">
+          <div @click="openProfile(e)" v-for="e in employees" :key="e.id" class="col-12 col-md-5 bg-light my-1 d-flex justify-content-center clickable">
+            <h1>{{e.firstName}} {{e.lastName}}</h1>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div v-else-if="!user.isManager" class="row h65 mt5">
+      <div class="col-10 offset-1 col-md-8 offset-md-2">
+        <h2>Hello, {{user.firstName}}.</h2>
+        <h4 v-if="!times.length">Clock-in when you arrive at {{business.name}}.</h4>
+        <h4 v-else-if="!times[times.length-1].clockOut">You clocked-in at {{times[times.length-1].clockIn}}</h4>
+        <h4 v-else>Clock-in when you arrive at {{business.name}}. <span @click="openProfile(user)" class="clickable"><b>Show your times.</b></span></h4>
+      </div>
+      <h1 v-if="user.coords">Lat: {{user.coords.lat}}</h1>
+      <h1 v-if="user.coords">lng: {{user.coords.lng}}</h1>
     </div>
   </div>
 </template>
@@ -29,9 +57,23 @@ export default {
       this.$router.push({ name: "login" });
     }
   },
+  data() {
+    return {
+      show: false
+    }
+  },
   computed: {
     user() {
       return this.$store.state.user;
+    },
+    business() {
+      return this.$store.state.business
+    },
+    employees() {
+      return this.$store.state.employees
+    },
+    times() {
+      return this.$store.state.times
     }
   },
   methods: {
@@ -43,6 +85,9 @@ export default {
     },
     busnReg() {
       this.$router.push({path: "/business-register"})
+    },
+    openProfile(e) {
+      this.$router.push({name: 'employee', params: {eId: e.id, e}})
     }
   }
 };
@@ -60,7 +105,7 @@ export default {
 .choices {
   justify-content: space-evenly;
 }
-.choices *:hover {
+.clickable {
   cursor: pointer;
 }
 .choice1:hover {

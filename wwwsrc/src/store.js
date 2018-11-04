@@ -21,7 +21,9 @@ const auth = Axios.create({
 export default new Vuex.Store({
   state: {
     user: {},
-    business: {}
+    business: {},
+    employees: [],
+    times: {}
   },
   mutations: {
     //
@@ -36,26 +38,65 @@ export default new Vuex.Store({
     //
     setBusiness(state, business) {
       state.business = business
-      Vue.set(state.user, state.user.isManager, 1)
-      router.push({name: 'home', path: '/'})
+      router.push({ name: 'home', path: '/' })
+      if (business.managerId == state.user.id) {
+        state.user.isManager = 1
+      } else {
+        state.user.isEmployee = 1
+      }
+    },
+    setEmployees(state, employees) {
+      state.employees = employees
+    },
+    setTimes(state, times) {
+      state.times = times
+      //   state.times = {}
+      //   for (let i = 0; i < times.length; i++) {
+      //     let time = times[i];
+      //     Vue.set(state.times, time.id, time)
+      //   }      
     }
   },
   actions: {
     //
     //USER DISPATCHES
     //
-    authenticate({ commit }) {
+    authenticate({ commit, dispatch }) {
       auth.get('authenticate')
         .then(res => {
           commit('setUser', res.data)
+          if (res.data.isManager) dispatch('managerGetBusiness', res.data.id)
+          if (res.data.isEmployee) {
+            dispatch('getTimes', res.data.id)
+            navigator.geolocation.getCurrentPosition(l => {
+              res.data.coords = {
+                lat: l.coords.latitude,
+                lng: l.coords.longitude
+              }
+            })
+            dispatch('employeeGetBusiness', res.data)
+          }
         })
         .catch(e => {
           console.error('not authenticated')
         })
     },
-    login({ commit }, payload) {
+    login({ commit, dispatch }, payload) {
       auth.post('login', payload)
-        .then(res => commit('setUser', res.data))
+      .then(res => {
+        commit('setUser', res.data)
+        if (res.data.isManager) dispatch('managerGetBusiness', res.data.id)
+        if (res.data.isEmployee) {
+          dispatch('getTimes', res.data.id)
+          navigator.geolocation.getCurrentPosition(l => {
+            res.data.coords = {
+              lat: l.coords.latitude,
+              lng: l.coords.longitude
+            }
+          })
+          dispatch('employeeGetBusiness', res.data)
+        }
+      })
         .catch(e => {
           console.error(e)
         })
@@ -80,10 +121,60 @@ export default new Vuex.Store({
     //
     //BUSINESS DISPATCHES
     //
-    registerBusiness({commit}, payload) {
+    registerBusiness({ commit }, payload) {
       api.post('register', payload)
-        .then(res => commit('setBusiness', res.data))
-        .catch( e => console.error(e))
+        .then(res => { commit('setBusiness', res.data) })
+        .catch(e => console.error(e))
+    },
+    managerGetBusiness({ commit, dispatch }, managerId) {
+      api.get(`manager/${managerId}`)
+        .then(res => {
+          commit('setBusiness', res.data)
+          dispatch('getEmployees', res.data.id)
+        })
+        .catch(e => console.error(e))
+    },
+    employeeGetBusiness({ commit, dispatch }, employee) {
+      api.get(`employee/${employee.id}`)
+        .then(res => {
+          commit('setBusiness', res.data)
+          dispatch('haversine', {
+            employee,
+            business: res.data
+          })
+        })
+        .catch(e => console.error(e))
+    },
+    addEmployee({ commit }, payload) {
+      console.log(payload)
+      api.post('enroll', payload)
+        .then(res => { commit('setBusiness', res.data) })
+        .catch(e => console.error(e))
+    },
+    getEmployees({ commit }, businessId) {
+      api.get(`employees/${businessId}`)
+        .then(res => commit('setEmployees', res.data))
+        .catch(e => console.error(e))
+    },
+    getTimes({ commit }, userId) {
+      api.get(`employee/times/${userId}`)
+        .then(res => commit('setTimes', res.data))
+        .catch(e => console.error(e))
+    },
+    //haversine from my team's capstone project - bullUtin
+    haversine({commit}, payload) {
+      console.log(payload)
+      // const earthRadius = 6371000
+      // let yourLat = this.coords.lat * (Math.PI / 180)
+      // let targetLat = this.business.lat * (Math.PI / 180)
+      // let latDif = (this.business.lat - this.coords.lat) * (Math.PI / 180)
+      // let lngDif = (this.business.lng - this.coords.lng) * (Math.PI / 180)
+      // let a = (Math.sin(latDif / 2) * Math.sin(latDif / 2)) +
+      //   (Math.cos(yourLat) * Math.cos(targetLat) *
+      //     Math.sin(lngDif / 2) * Math.sin(lngDif / 2))
+      // let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+      // let distanceKM = (earthRadius * c) / 1000
+      // this.distance = distanceKM * .6213
     }
   }
 })

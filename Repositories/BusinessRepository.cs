@@ -56,7 +56,7 @@ namespace time.Repositories
 
         public Business AddEmployeeToBusiness(EmployeeRegisterToBusiness empRegToBusn)
         {
-            Business business = _db.Query<Business>(@"SELECT id FROM businesses
+            Business business = _db.Query<Business>(@"SELECT * FROM businesses
                 WHERE pin = @Pin", empRegToBusn).FirstOrDefault();
             if (business == null) return null;
             int success = _db.Execute(@"INSERT INTO businessEmployees
@@ -67,6 +67,7 @@ namespace time.Repositories
                 businessId = business.Id
             });
             if (success != 1) return null;
+            _db.Execute(@"UPDATE users SET isEmployee = 1 WHERE id = @UserId;", empRegToBusn);
             business.Pin = null;
             return business;
         }
