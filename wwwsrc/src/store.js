@@ -25,11 +25,11 @@ export default new Vuex.Store({
   mutations: {
     setUser(state, user) {
       state.user = user
-      router.push({name: 'home', path: '/'})
+      router.push({ name: 'home', path: '/' })
     }
   },
   actions: {
-    authenticate({ commit, dispatch }) {
+    authenticate({ commit }) {
       auth.get('authenticate')
         .then(res => {
           commit('setUser', res.data)
@@ -38,24 +38,24 @@ export default new Vuex.Store({
           console.log('not authenticated')
         })
     },
-    login({commit, dispatch}, payload) {
+    login({ commit }, payload) {
       auth.post('login', payload)
-        .then(res => commit('setUser', res.data.data))
+        .then(res => commit('setUser', res.data))
         .catch(e => {
           console.log(e)
         })
     },
-    register({commit, dispatch}, payload) {
+    register({ commit }, payload) {
       auth.post('register', payload)
-        .then(res => commit('setUser', res.data.data))
+        .then(res => commit('setUser', res.data))
         .catch(e => {
           console.log(e)
         })
     },
-    logout({}) {
+    logout({ }) {
       auth.delete("logout")
         .then(res => {
-          if (!res.data) return 
+          if (!res.data) return
           router.push({ name: 'login', path: '/login' })
         })
         .catch(e => {

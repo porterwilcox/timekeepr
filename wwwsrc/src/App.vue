@@ -3,3 +3,8 @@
     <router-view/>
   </div>
 </template>
+<style>
+.h100 {
+  height: 100vh;
+}
+</style>
