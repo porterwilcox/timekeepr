@@ -7,11 +7,11 @@
       <div class="col-2 d-flex justify-content-end align-items-center">
         <button @click="logout()" class="btn btn-outline-dark">logout</button>
       </div>
-      <div v-if="!user.isEmployee && !user.isMangaer" class="col col-md-10 offset-md-1 text-center py-2">
+      <div v-if="!user.isEmployee && !user.isManager" class="col col-md-10 offset-md-1 text-center py-2">
         <h5>Welcome to TimeKeepr! Join a business as an employee or register a new business as a manager to get started.</h5>
       </div>
     </div>
-    <div v-if="!user.isEmployee && !user.isMangaer" class="row h65 mt5 choices">
+    <div v-if="!user.isEmployee && !user.isManager" class="row h65 mt5 choices">
       <div @click="empReg()" class="col-10 col-md-5 offset-md-0 bg-light d-flex justify-content-center choice1 align-items-center">
         <h3>Join a business as an employee</h3>
       </div>

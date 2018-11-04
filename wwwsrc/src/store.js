@@ -20,36 +20,51 @@ const auth = Axios.create({
 
 export default new Vuex.Store({
   state: {
-    user: {}
+    user: {},
+    business: {}
   },
   mutations: {
+    //
+    //USER COMMITS
+    //
     setUser(state, user) {
       state.user = user
       router.push({ name: 'home', path: '/' })
+    },
+    //
+    //BUSINESS COMMITS
+    //
+    setBusiness(state, business) {
+      state.business = business
+      Vue.set(state.user, state.user.isManager, 1)
+      router.push({name: 'home', path: '/'})
     }
   },
   actions: {
+    //
+    //USER DISPATCHES
+    //
     authenticate({ commit }) {
       auth.get('authenticate')
         .then(res => {
           commit('setUser', res.data)
         })
         .catch(e => {
-          console.log('not authenticated')
+          console.error('not authenticated')
         })
     },
     login({ commit }, payload) {
       auth.post('login', payload)
         .then(res => commit('setUser', res.data))
         .catch(e => {
-          console.log(e)
+          console.error(e)
         })
     },
     register({ commit }, payload) {
       auth.post('register', payload)
         .then(res => commit('setUser', res.data))
         .catch(e => {
-          console.log(e)
+          console.error(e)
         })
     },
     logout({ }) {
@@ -59,8 +74,16 @@ export default new Vuex.Store({
           router.push({ name: 'login', path: '/login' })
         })
         .catch(e => {
-          console.log(e)
+          console.error(e)
         })
     },
+    //
+    //BUSINESS DISPATCHES
+    //
+    registerBusiness({commit}, payload) {
+      api.post('register', payload)
+        .then(res => commit('setBusiness', res.data))
+        .catch( e => console.error(e))
+    }
   }
 })

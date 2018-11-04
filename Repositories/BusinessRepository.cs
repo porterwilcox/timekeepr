@@ -14,10 +14,9 @@ namespace time.Repositories
         public Business Register(BusinessRegistration busnReg)
         {
             string id = Guid.NewGuid().ToString();
-            Business busn = _db.ExecuteScalar<Business>(@"INSERT INTO businesses
+            int businessAdded = _db.Execute(@"INSERT INTO businesses
                 (id, name, pin, lat, lng, managerId)
-                VALUES (@id, @name, @pin, @lat, @lng, @managerId);
-                SELECT * FROM busns WHERE id = @id", new
+                VALUES (@id, @name, @pin, @lat, @lng, @managerId);", new
             {
                 id,
                 name = busnReg.Name,
@@ -26,8 +25,16 @@ namespace time.Repositories
                 pin = busnReg.Pin,
                 managerId = busnReg.ManagerId
             });
-            if (busn == null) return null;
-            return busn;
+            if (businessAdded != 1) return null;
+            _db.Execute(@"UPDATE users SET isManager = 1 WHERE id = @ManagerId", busnReg);
+            return new Business() {
+                Id = id,
+                Name = busnReg.Name,
+                Lat = busnReg.Lat,
+                Lng = busnReg.Lng,
+                Pin = busnReg.Pin,
+                ManagerId = busnReg.ManagerId
+            };
         }
 
         public Business GetBusinessByManager(string managerId)
