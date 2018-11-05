@@ -23,7 +23,8 @@ export default new Vuex.Store({
     user: {},
     business: {},
     employees: [],
-    times: {}
+    times: {},
+    atBusiness: false
   },
   mutations: {
     //
@@ -49,12 +50,21 @@ export default new Vuex.Store({
       state.employees = employees
     },
     setTimes(state, times) {
-      state.times = times
-      //   state.times = {}
-      //   for (let i = 0; i < times.length; i++) {
-      //     let time = times[i];
-      //     Vue.set(state.times, time.id, time)
-      //   }      
+      state.times = times  
+    },
+    setDistance(state, distance) {
+      console.log(distance)
+      if (distance <= .25) {
+        state.atBusiness = true
+      } else {
+        state.atBusiness = false
+      }
+    },
+    addTime(state, time) {
+      state.times.push(time)
+    },
+    updateTime(state, time) {
+      state.times[state.times.length - 1] = time
     }
   },
   actions: {
@@ -145,10 +155,17 @@ export default new Vuex.Store({
         })
         .catch(e => console.error(e))
     },
-    addEmployee({ commit }, payload) {
-      console.log(payload)
+    addEmployee({ commit, dispatch }, payload) {
       api.post('enroll', payload)
-        .then(res => { commit('setBusiness', res.data) })
+        .then(res => { 
+          commit('setBusiness', res.data)
+          dispatch('haversine', {
+            employee: {
+              coords: payload.coords
+            },
+            business: res.data
+          })
+        })
         .catch(e => console.error(e))
     },
     getEmployees({ commit }, businessId) {
@@ -164,17 +181,30 @@ export default new Vuex.Store({
     //haversine from my team's capstone project - bullUtin
     haversine({commit}, payload) {
       console.log(payload)
-      // const earthRadius = 6371000
-      // let yourLat = this.coords.lat * (Math.PI / 180)
-      // let targetLat = this.business.lat * (Math.PI / 180)
-      // let latDif = (this.business.lat - this.coords.lat) * (Math.PI / 180)
-      // let lngDif = (this.business.lng - this.coords.lng) * (Math.PI / 180)
-      // let a = (Math.sin(latDif / 2) * Math.sin(latDif / 2)) +
-      //   (Math.cos(yourLat) * Math.cos(targetLat) *
-      //     Math.sin(lngDif / 2) * Math.sin(lngDif / 2))
-      // let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
-      // let distanceKM = (earthRadius * c) / 1000
-      // this.distance = distanceKM * .6213
+      const earthRadius = 6371000
+      let yourLat = payload.employee.coords.lat * (Math.PI / 180)
+      let targetLat = payload.business.lat * (Math.PI / 180)
+      let latDif = (payload.business.lat - payload.employee.coords.lat) * (Math.PI / 180)
+      let lngDif = (payload.business.lng - payload.employee.coords.lng) * (Math.PI / 180)
+      let a = (Math.sin(latDif / 2) * Math.sin(latDif / 2)) +
+        (Math.cos(yourLat) * Math.cos(targetLat) *
+          Math.sin(lngDif / 2) * Math.sin(lngDif / 2))
+      let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+      let distanceKM = (earthRadius * c) / 1000
+      commit('setDistance', distanceKM * .6213)
+    },
+    //
+    //EMPLOYEES DISPATCHES
+    //
+    clockIn({commit}, payload) {
+      api.post("employee/clockin", payload)
+        .then(res => commit('addTime', res.data))
+        .catch(e => console.error(e))
+    },
+    clockOut({commit}, payload) {
+      api.post("employee/clockout", payload)
+        .then(res => commit('updateTime', res.data))
+        .catch(e => console.error(e))
     }
   }
 })

@@ -87,8 +87,8 @@ namespace time.Repositories
         internal UserTime CreateClockIn(UserTime time)
         {
             int id = _db.ExecuteScalar<int>(@"INSERT INTO employeeTimes 
-                (employeeId, businessId, clockIn, clockOut)
-                VALUES (@EmployeeId, @BusinessId, @ClockIn, @ClockOut);
+                (employeeId, businessId, clockIn)
+                VALUES (@EmployeeId, @BusinessId, @ClockIn);
                 SELECT LAST_INSERT_ID();", time);
             time.Id = id;
             return time;

@@ -38,18 +38,39 @@
       </div>
     </div>
     <div v-else-if="!user.isManager" class="row h65 mt5">
-      <div class="col-10 offset-1 col-md-8 offset-md-2">
+      <div class="col-10 offset-1 col-md-8 offset-md-2 h-fit-content">
         <h2>Hello, {{user.firstName}}.</h2>
-        <h4 v-if="!times.length">Clock-in when you arrive at {{business.name}}.</h4>
-        <h4 v-else-if="!times[times.length-1].clockOut">You clocked-in at {{times[times.length-1].clockIn}}</h4>
-        <h4 v-else>Clock-in when you arrive at {{business.name}}. <span @click="openProfile(user)" class="clickable"><b>Show your times.</b></span></h4>
+        <div v-if="!times.length">
+          <h4 v-if="!atBusiness">Clock-in when you arrive at {{business.name}}.</h4>
+          <h4 v-if="atBusiness">Don't forget to clock in!</h4>
+        </div>
+        <div v-else>
+          <h4 v-if="!times[times.length-1].clockOut">You clocked-in at {{times[times.length-1].clockIn}}</h4>
+          <h4 v-else-if="atBusiness">Don't forget to clock in!</h4>
+          <h4 v-else>Clock-in when you arrive at {{business.name}}. <span @click="openProfile(user)" class="clickable"><b>Show your times.</b></span></h4>
+        </div>
       </div>
-      <h1 v-if="user.coords">Lat: {{user.coords.lat}}</h1>
-      <h1 v-if="user.coords">lng: {{user.coords.lng}}</h1>
+      <!-- <div :class="atBusiness ? clockClass + 'bg-success clickable' : clockClass + 'bg-dark text-white'">
+        <h1>{{atBusiness}}</h1>
+      </div> -->
+      <div v-if="atBusiness && !times.length" @click="clockIn()" class="col-10 offset-1 col-md-8 offset-md-2 h45 d-flex justify-content-center align-items-center bg-dark text-white clickable white-shadow">
+        <h1>Clock In</h1>
+      </div>
+      <div v-else-if="!atBusiness" class="col-10 offset-1 col-md-8 offset-md-2 h45 d-flex flex-column justify-content-center align-items-center bg-light no-click">
+        <h1 class="text-muted">Clock In</h1>
+        <h4>(You're not at {{business.name}})</h4>
+      </div>
+      <div v-else-if="atBusiness && times[times.length-1].clockOut" @click="clockIn()" class="col-10 offset-1 col-md-8 offset-md-2 h45 d-flex justify-content-center align-items-center bg-dark text-white clickable white-shadow">
+        <h1>Clock In</h1>
+      </div>
+      <div v-else-if="!times[times.length-1].clockOut" @click="clockOut(times[times.length - 1])" class="col-10 offset-1 col-md-8 offset-md-2 h45 d-flex justify-content-center align-items-center bg-dark text-white clickable white-shadow">
+        <h1>Clock Out</h1>
+      </div>
     </div>
   </div>
 </template>
 <script>
+let date = new Date();
 export default {
   name: "home",
   mounted() {
@@ -59,45 +80,68 @@ export default {
   },
   data() {
     return {
-      show: false
-    }
+      show: false,
+      clockClass:
+        "col-10 offset-1 col-md-8 offset-md-2 h45 d-flex justify-content-center align-items-center"
+    };
   },
   computed: {
     user() {
       return this.$store.state.user;
     },
     business() {
-      return this.$store.state.business
+      return this.$store.state.business;
     },
     employees() {
-      return this.$store.state.employees
+      return this.$store.state.employees;
     },
     times() {
-      return this.$store.state.times
+      return this.$store.state.times;
+    },
+    atBusiness() {
+      return this.$store.state.atBusiness;
     }
   },
   methods: {
     logout() {
-      this.$store.dispatch('logout')
+      this.$store.dispatch("logout");
     },
     empReg() {
-      this.$router.push({path: "/employee-register"})
+      this.$router.push({ path: "/employee-register" });
     },
     busnReg() {
-      this.$router.push({path: "/business-register"})
+      this.$router.push({ path: "/business-register" });
     },
     openProfile(e) {
-      this.$router.push({name: 'employee', params: {eId: e.id, e}})
+      this.$router.push({ name: "employee", params: { eId: e.id, e } });
+    },
+    clockIn() {
+      let obj = {
+        employeeId: this.user.id,
+        businessId: this.business.id,
+        clockIn: date.getTime()
+      };
+      this.$store.dispatch("clockIn", obj);
+    },
+    clockOut(time) {
+      time.clockOut = date.getTime()
+      this.$store.dispatch("clockOut", time)
     }
   }
 };
 </script>
 <style>
 .h25 {
-    height: 25vh;
+  height: 25vh;
+}
+.h45 {
+  height: 45vh;
 }
 .h65 {
   height: 65vh;
+}
+.h-fit-content {
+  height: fit-content;
 }
 .mt5 {
   margin-top: 5vh;
@@ -113,6 +157,9 @@ export default {
 }
 .choice2:hover {
   text-shadow: 0 0 5px white;
+}
+.no-click {
+  cursor: not-allowed;
 }
 </style>
 

@@ -31,7 +31,11 @@ export default {
   data() {
       return {
           pin: "",
-          locationPermission: false
+          locationPermission: false,
+          coords: {
+              lat: 0,
+              lng: 0
+          }
       }
   },
   computed: {
@@ -46,12 +50,16 @@ export default {
       this.locationPermission = false
     },
     getLocation() {
-        navigator.geolocation.getCurrentPosition(l => this.$store.commit('setUserCoords', l.coords))  
+        navigator.geolocation.getCurrentPosition(l => {
+            this.coords.lat = l.coords.latitude,
+            this.coords.lng = l.coords.longitude
+        })  
     },
     register() {
       let obj = {
         pin: this.pin,
-        userId: this.user.id
+        userId: this.user.id,
+        coords: this.coords
       };
       this.$store.dispatch("addEmployee", obj);
     }
