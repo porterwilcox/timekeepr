@@ -45,7 +45,7 @@
           <h4 v-if="atBusiness">Don't forget to clock in!</h4>
         </div>
         <div v-else>
-          <h4 v-if="!times[times.length-1].clockOut">You clocked-in at {{times[times.length-1].clockIn}}</h4>
+          <h4 v-if="!times[times.length-1].clockOut">You clocked-in at {{new Date(times[times.length-1].clockIn).getHours() > 12 ? new Date(times[times.length-1].clockIn).getHours() - 12 : new Date(times[times.length-1].clockIn).getHours()}}:{{new Date(times[times.length-1].clockIn).getMinutes()}}</h4>
           <h4 v-else-if="atBusiness">Don't forget to clock in!</h4>
           <h4 v-else>Clock-in when you arrive at {{business.name}}. <span @click="openProfile(user)" class="clickable"><b>Show your times.</b></span></h4>
         </div>
@@ -125,6 +125,7 @@ export default {
     },
     clockOut(time) {
       time.clockOut = date.getTime()
+      date.set
       this.$store.dispatch("clockOut", time)
     }
   }

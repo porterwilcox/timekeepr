@@ -53,7 +53,6 @@ export default new Vuex.Store({
       state.times = times  
     },
     setDistance(state, distance) {
-      console.log(distance)
       if (distance <= .25) {
         state.atBusiness = true
       } else {
@@ -180,7 +179,6 @@ export default new Vuex.Store({
     },
     //haversine from my team's capstone project - bullUtin
     haversine({commit}, payload) {
-      console.log(payload)
       const earthRadius = 6371000
       let yourLat = payload.employee.coords.lat * (Math.PI / 180)
       let targetLat = payload.business.lat * (Math.PI / 180)
