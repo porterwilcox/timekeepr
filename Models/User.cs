@@ -18,6 +18,8 @@ namespace time.Models
         public long ClockIn { get; set; }
 
         public long ClockOut { get; set; } = 0;
+
+        public int isPaid { get; set; } = 0;
     }
 
     public class UserLogin

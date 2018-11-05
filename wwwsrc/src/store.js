@@ -23,7 +23,7 @@ export default new Vuex.Store({
     user: {},
     business: {},
     employees: [],
-    times: {},
+    times: [],
     atBusiness: false
   },
   mutations: {
@@ -179,6 +179,7 @@ export default new Vuex.Store({
     },
     //haversine from my team's capstone project - bullUtin
     haversine({commit}, payload) {
+      console.log(payload)
       const earthRadius = 6371000
       let yourLat = payload.employee.coords.lat * (Math.PI / 180)
       let targetLat = payload.business.lat * (Math.PI / 180)

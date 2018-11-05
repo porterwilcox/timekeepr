@@ -17,11 +17,15 @@
           </div>
         </div>
         <div v-else class="row h65 mt5 justify-content-around">
-          <div v-for="t in times" :key="t.id" class="col-10 offset-1 col-md-3 pb-5">
-            <h2>{{new Date(t.clockIn).getMonth() + 1}}.{{new Date(t.clockIn).getDate()}}.{{new Date(t.clockIn).getFullYear()}}</h2>
+          <div v-for="t in times" :key="t.id" :id="t.id" :class="t.isPaid ? 'col-10 offset-1 col-md-3 pb-5 paid' : 'col-10 offset-1 col-md-3 pb-5 unpaid'">
+            <div class="d-flex justify-content-between align-items-center">
+              <h2>{{new Date(t.clockIn).getMonth() + 1}}.{{new Date(t.clockIn).getDate()}}.{{new Date(t.clockIn).getFullYear()}}</h2>
+              <b-checkbox v-if="!t.isPaid" v-model="dataTimes[t.id]" class="text-danger clickable"><h4>$</h4></b-checkbox>
+              <i v-else class="far fa-smile text-success fa-lg mr-4"></i>
+            </div>
             <hr>
-            <h3>in - {{new Date(t.clockIn).getHours() > 12 ? new Date(t.clockIn).getHours() - 12 : new Date(t.clockIn).getHours()}}:{{new Date(t.clockIn).getMinutes()}}</h3>
-            <h3 v-if="t.clockOut">out - {{new Date(t.clockOut).getHours() > 12 ? new Date(t.clockOut).getHours() - 12 : new Date(t.clockOut).getHours()}}:{{new Date(t.clockOut).getMinutes()}}</h3>
+            <h3>in - {{new Date(t.clockIn).getHours() > 12 ? new Date(t.clockIn).getHours() - 12 : new Date(t.clockIn).getHours()}}:{{new Date(t.clockIn).getMinutes() > 9 ? new Date(t.clockIn).getMinutes() : '0' + new Date(t.clockIn).getMinutes()}}</h3>
+            <h3 v-if="t.clockOut">out - {{new Date(t.clockOut).getHours() > 12 ? new Date(t.clockOut).getHours() - 12 : new Date(t.clockOut).getHours()}}:{{new Date(t.clockOut).getMinutes() > 9 ? new Date(t.clockOut).getMinutes() : '0' + new Date(t.clockOut).getMinutes()}}</h3>
             <h3 v-else>out - still working</h3>
           </div>
         </div>
@@ -39,8 +43,9 @@ export default {
   },
   data() {
     return {
-      hours: 0
-    }
+      hours: 0,
+      dataTimes: {}
+    };
   },
   computed: {
     times() {
@@ -52,20 +57,33 @@ export default {
       this.$router.push({ name: "home" });
     },
     total() {
-      let hrs = 0
+      let hrs = 0;
       for (let i = 0; i < this.times.length; i++) {
         let t = this.times[i];
-        if (!t.clockOut) continue
-        let out = new Date(t.clockOut).getHours() + (new Date(t.clockOut).getMinutes() / 60)
-        let myIn = new Date(t.clockIn).getHours() + (new Date(t.clockIn).getMinutes() / 60)
-        hrs += out - myIn
+        if (!t.clockOut) continue;
+        let out =
+          new Date(t.clockOut).getHours() +
+          new Date(t.clockOut).getMinutes() / 60;
+        let myIn =
+          new Date(t.clockIn).getHours() +
+          new Date(t.clockIn).getMinutes() / 60;
+        hrs += Math.abs(myIn - out); //VERY IMPORTANT! THIS ONLY CALCULATES CORRECTLY SO LONG AS NOT OVERNIGHT SHIFTS
       }
-      this.hours = hrs.toFixed(2)
-    }
+      this.hours = hrs.toFixed(2);
+    },
+    setData() {
+      for (let i = 0; i < this.times.length; i++) {
+        let t = this.times[i];
+        if (!t.isPaid) {
+          this.dataTimes[t.id] = false;
+        }
+      }
+    },
   },
   watch: {
     times(val) {
-      this.total()
+      this.total();
+      this.setData();
     }
   }
 };

@@ -69,3 +69,6 @@
 --         REFERENCES businesses(id)
 --         ON DELETE CASCADE
 -- );
+
+-- ALTER TABLE employeeTimes ADD COLUMN isPaid tinyint AFTER clockOut;
+-- ALTER TABLE employeeTimes ALTER isPaid SET DEFAULT 0;

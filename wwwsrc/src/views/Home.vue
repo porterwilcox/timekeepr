@@ -45,26 +45,31 @@
           <h4 v-if="atBusiness">Don't forget to clock in!</h4>
         </div>
         <div v-else>
-          <h4 v-if="!times[times.length-1].clockOut">You clocked-in at {{new Date(times[times.length-1].clockIn).getHours() > 12 ? new Date(times[times.length-1].clockIn).getHours() - 12 : new Date(times[times.length-1].clockIn).getHours()}}:{{new Date(times[times.length-1].clockIn).getMinutes()}}</h4>
+          <h4 v-if="!times[times.length-1].clockOut">You clocked-in at {{new Date(times[times.length-1].clockIn).getHours() > 12 ? new Date(times[times.length-1].clockIn).getHours() - 12 : new Date(times[times.length-1].clockIn).getHours()}}:{{new Date(times[times.length-1].clockIn).getMinutes() > 9 ? new Date(times[times.length-1].clockIn).getMinutes() : '0' + new Date(times[times.length-1].clockIn).getMinutes()}}</h4>
           <h4 v-else-if="atBusiness">Don't forget to clock in!</h4>
           <h4 v-else>Clock-in when you arrive at {{business.name}}. <span @click="openProfile(user)" class="clickable"><b>Show your times.</b></span></h4>
         </div>
       </div>
-      <!-- <div :class="atBusiness ? clockClass + 'bg-success clickable' : clockClass + 'bg-dark text-white'">
-        <h1>{{atBusiness}}</h1>
-      </div> -->
-      <div v-if="atBusiness && !times.length" @click="clockIn()" class="col-10 offset-1 col-md-8 offset-md-2 h45 d-flex justify-content-center align-items-center bg-dark text-white clickable white-shadow">
-        <h1>Clock In</h1>
+      <div v-if="!times.length" class="col-10 offset-1 col-md-8 offset-md-2 h45">
+        <div v-if="atBusiness" @click="clockIn()" class="h-100 w-100 d-flex justify-content-center align-items-center bg-dark text-white clickable white-shadow">
+          <h1>Clock In</h1>
+        </div>
+        <div v-else class="h-100 w-100 flex-column d-flex flex-column justify-content-center align-items-center bg-light no-click">
+          <h1 class="text-muted">Clock In</h1>
+          <h4>(You're not at {{business.name}})</h4>
+        </div>
       </div>
-      <div v-else-if="!atBusiness" class="col-10 offset-1 col-md-8 offset-md-2 h45 d-flex flex-column justify-content-center align-items-center bg-light no-click">
-        <h1 class="text-muted">Clock In</h1>
-        <h4>(You're not at {{business.name}})</h4>
-      </div>
-      <div v-else-if="atBusiness && times[times.length-1].clockOut" @click="clockIn()" class="col-10 offset-1 col-md-8 offset-md-2 h45 d-flex justify-content-center align-items-center bg-dark text-white clickable white-shadow">
-        <h1>Clock In</h1>
-      </div>
-      <div v-else-if="!times[times.length-1].clockOut" @click="clockOut(times[times.length - 1])" class="col-10 offset-1 col-md-8 offset-md-2 h45 d-flex justify-content-center align-items-center bg-dark text-white clickable white-shadow">
-        <h1>Clock Out</h1>
+      <div v-else class="col-10 offset-1 col-md-8 offset-md-2 h45">
+        <div v-if="atBusiness && times[times.length-1].clockOut" @click="clockIn()" class="h-100 w-100 d-flex justify-content-center align-items-center bg-dark text-white clickable white-shadow">
+          <h1>Clock In</h1>
+        </div>
+        <div v-else-if="!atBusiness && times[times.length-1].clockOut" class="h-100 w-100 d-flex flex-column justify-content-center align-items-center bg-light no-click">
+          <h1 class="text-muted">Clock In</h1>
+          <h4>(You're not at {{business.name}})</h4>
+        </div>
+        <div v-else-if="!times[times.length-1].clockOut" @click="clockOut(times[times.length - 1])" class="h-100 w-100 d-flex justify-content-center align-items-center bg-dark text-white clickable white-shadow">
+          <h1>Clock Out</h1>
+        </div>
       </div>
     </div>
   </div>
