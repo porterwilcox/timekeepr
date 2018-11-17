@@ -4,6 +4,9 @@
   </div>
 </template>
 <style>
+.app {
+  overflow-x: hidden;
+}
 .h100 {
   height: 100vh;
 }

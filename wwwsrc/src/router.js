@@ -31,7 +31,7 @@ export default new Router({
       component: BusinessRegister
     },
     {
-      path: 'employee/:eId',
+      path: '/employee/:eId',
       name: 'employee',
       props: true,
       component: Employee

@@ -1,5 +1,6 @@
 <template>
-    <div class="employee container-fluid h100">
+    <div v-if="e" class="employee container-fluid h100">
+      <!-- should've made this a component -->
         <div class="row bg-secondary h25">
             <div class="col-10 d-flex justify-content-center align-items-center">
                 <h1>{{e.firstName}} {{e.lastName}}</h1>
@@ -11,6 +12,10 @@
               <h4>{{hours}} hrs worked</h4>
             </div>
         </div>
+        <div class="actions row w-100 justify-content-around">
+          <button class="btn btn-dark">Only Unpaid</button>
+          <button onclick="confirmPaid()" class="btn btn-dark">Confirm Paid</button>
+        </div>
         <div v-if="!times.length" class="row h65 mt5">
           <div class="col-10 offset-1 col-md-8 col-md-2">
             <h2>{{e.firstName}} doens't have any clock-in's.</h2>
@@ -20,8 +25,8 @@
           <div v-for="t in times" :key="t.id" :id="t.id" :class="t.isPaid ? 'col-10 offset-1 col-md-3 pb-5 paid' : 'col-10 offset-1 col-md-3 pb-5 unpaid'">
             <div class="d-flex justify-content-between align-items-center">
               <h2>{{new Date(t.clockIn).getMonth() + 1}}.{{new Date(t.clockIn).getDate()}}.{{new Date(t.clockIn).getFullYear()}}</h2>
-              <b-checkbox v-if="!t.isPaid" v-model="dataTimes[t.id]" class="text-danger clickable"><h4>$</h4></b-checkbox>
-              <i v-else class="far fa-smile text-success fa-lg mr-4"></i>
+              <b-checkbox v-if="!t.isPaid" class="text-danger clickable"><h4>$</h4></b-checkbox>
+              <h4 v-else class="text-success">$</h4>
             </div>
             <hr>
             <h3>in - {{new Date(t.clockIn).getHours() > 12 ? new Date(t.clockIn).getHours() - 12 : new Date(t.clockIn).getHours()}}:{{new Date(t.clockIn).getMinutes() > 9 ? new Date(t.clockIn).getMinutes() : '0' + new Date(t.clockIn).getMinutes()}}</h3>
@@ -38,6 +43,7 @@ export default {
   mounted() {
     if (!this.$store.state.user.id) {
       this.$router.push({ name: "login", path: "/login" });
+      return
     }
     this.$store.dispatch("getTimes", this.e.id);
   },
@@ -71,14 +77,9 @@ export default {
       }
       this.hours = hrs.toFixed(2);
     },
-    setData() {
-      for (let i = 0; i < this.times.length; i++) {
-        let t = this.times[i];
-        if (!t.isPaid) {
-          this.dataTimes[t.id] = false;
-        }
-      }
-    },
+    confirmPaid() {
+      //get a template here for the confirm message
+    }
   },
   watch: {
     times(val) {
@@ -89,4 +90,8 @@ export default {
 };
 </script>
 <style>
+.actions {
+  position: absolute;
+  top: 23vh;
+}
 </style>

@@ -11620,11 +11620,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "c:\\source\\self-projs\\time\\time.csproj",
+      "projectUniqueName": "C:\\source\\self-projs\\timekeepr\\time.csproj",
       "projectName": "time",
-      "projectPath": "c:\\source\\self-projs\\time\\time.csproj",
+      "projectPath": "C:\\source\\self-projs\\timekeepr\\time.csproj",
       "packagesPath": "C:\\Users\\wilco\\.nuget\\packages\\",
-      "outputPath": "c:\\source\\self-projs\\time\\obj\\",
+      "outputPath": "C:\\source\\self-projs\\timekeepr\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"

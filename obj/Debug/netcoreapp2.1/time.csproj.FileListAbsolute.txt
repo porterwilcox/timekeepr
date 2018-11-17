@@ -12,3 +12,17 @@ C:\source\self-projs\time\obj\Debug\netcoreapp2.1\time.AssemblyInfo.cs
 C:\source\self-projs\time\obj\Debug\netcoreapp2.1\time.RazorTargetAssemblyInfo.cache
 C:\source\self-projs\time\obj\Debug\netcoreapp2.1\time.dll
 C:\source\self-projs\time\obj\Debug\netcoreapp2.1\time.pdb
+C:\source\self-projs\timekeepr\bin\Debug\netcoreapp2.1\time.deps.json
+C:\source\self-projs\timekeepr\bin\Debug\netcoreapp2.1\time.runtimeconfig.json
+C:\source\self-projs\timekeepr\bin\Debug\netcoreapp2.1\time.runtimeconfig.dev.json
+C:\source\self-projs\timekeepr\bin\Debug\netcoreapp2.1\time.dll
+C:\source\self-projs\timekeepr\bin\Debug\netcoreapp2.1\time.pdb
+C:\source\self-projs\timekeepr\obj\Debug\netcoreapp2.1\time.csprojAssemblyReference.cache
+C:\source\self-projs\timekeepr\obj\Debug\netcoreapp2.1\time.csproj.CoreCompileInputs.cache
+C:\source\self-projs\timekeepr\obj\Debug\netcoreapp2.1\time.RazorAssemblyInfo.cache
+C:\source\self-projs\timekeepr\obj\Debug\netcoreapp2.1\time.RazorAssemblyInfo.cs
+C:\source\self-projs\timekeepr\obj\Debug\netcoreapp2.1\time.AssemblyInfoInputs.cache
+C:\source\self-projs\timekeepr\obj\Debug\netcoreapp2.1\time.AssemblyInfo.cs
+C:\source\self-projs\timekeepr\obj\Debug\netcoreapp2.1\time.RazorTargetAssemblyInfo.cache
+C:\source\self-projs\timekeepr\obj\Debug\netcoreapp2.1\time.dll
+C:\source\self-projs\timekeepr\obj\Debug\netcoreapp2.1\time.pdb
