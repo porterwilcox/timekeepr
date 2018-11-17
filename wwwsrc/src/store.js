@@ -9,7 +9,7 @@ let production = !window.location.host.includes('localhost');
 let baseUrl = production ? '//time-keepr.herokuapp.com/' : '//localhost:5000/';
 
 let api = Axios.create({
-  baseURL: baseUrl + 'api/',
+  baseURL: baseUrl + 'api/time/',
   timeout: 3000,
   withCredentials: true
 })
