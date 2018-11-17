@@ -23,7 +23,7 @@ export default new Vuex.Store({
     user: {},
     business: {},
     employees: [],
-    times: [],
+    times: {},
     atBusiness: false
   },
   mutations: {
@@ -50,7 +50,11 @@ export default new Vuex.Store({
       state.employees = employees
     },
     setTimes(state, times) {
-      state.times = times  
+      let obj = {}
+      times.forEach(t => {
+        obj[t.id] = t
+      })  
+      state.times = obj
     },
     setDistance(state, distance) {
       if (distance <= .25) {
@@ -60,10 +64,15 @@ export default new Vuex.Store({
       }
     },
     addTime(state, time) {
-      state.times.push(time)
+      Vue.set(state.times, `${time.id}`, time)
     },
     updateTime(state, time) {
-      state.times[state.times.length - 1] = time
+      state.times[time.id] = time
+    },
+    setTimesPaid(state, payload) {
+      payload.forEach(t => {
+        state.times[t.id] = t
+      })
     }
   },
   actions: {
@@ -204,6 +213,18 @@ export default new Vuex.Store({
       api.post("employee/clockout", payload)
         .then(res => commit('updateTime', res.data))
         .catch(e => console.error(e))
+    },
+    //
+    //MANAGER DISPATCHES W/ TIMES
+    //
+    setTimesPaid({commit}, payload) {
+      let successes = []
+      payload.forEach(id => {
+        api.put('', id)
+          .then(() => successes.push(id))
+          .catch(e => console.error(e))
+      })
+      commit('setTimesPaid', successes)
     }
   }
 })

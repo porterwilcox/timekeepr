@@ -72,6 +72,12 @@ namespace time.Repositories
             return business;
         }
 
+        internal bool timeIsPaid(int id)
+        {
+            int success = _db.Execute(@"UPDATE employeeTimes SET isPaid = 1 WHERE id = @id;", new { id });
+            return success == 1;
+        }
+
         internal IEnumerable<User> GetEmployeesByBusinessId(string businessId)
         {
             var users = _db.Query<User>(@"SELECT * FROM businessEmployees be

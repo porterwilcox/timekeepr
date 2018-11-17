@@ -12,11 +12,15 @@
               <h4>{{hours}} hrs worked</h4>
             </div>
         </div>
-        <div class="actions row w-100 justify-content-around">
-          <button class="btn btn-dark">Only Unpaid</button>
-          <button onclick="confirmPaid()" class="btn btn-dark">Confirm Paid</button>
+        <div class="actions row w-100">
+          <div class="col-6 d-flex justify-content-center">
+            <button class="btn btn-dark">Only Unpaid</button>
+          </div>
+          <div class="col-6 d-flex justify-content-center">
+            <button @click="confirmPaid()" :class="hasTimes ? 'btn btn-dark' : 'd-none'">Confirm Paid</button>
+          </div>
         </div>
-        <div v-if="!times.length" class="row h65 mt5">
+        <div v-if="!Object.keys(times).length" class="row h65 mt5">
           <div class="col-10 offset-1 col-md-8 col-md-2">
             <h2>{{e.firstName}} doens't have any clock-in's.</h2>
           </div>
@@ -25,7 +29,7 @@
           <div v-for="t in times" :key="t.id" :id="t.id" :class="t.isPaid ? 'col-10 offset-1 col-md-3 pb-5 paid' : 'col-10 offset-1 col-md-3 pb-5 unpaid'">
             <div class="d-flex justify-content-between align-items-center">
               <h2>{{new Date(t.clockIn).getMonth() + 1}}.{{new Date(t.clockIn).getDate()}}.{{new Date(t.clockIn).getFullYear()}}</h2>
-              <b-checkbox v-if="!t.isPaid" class="text-danger clickable"><h4>$</h4></b-checkbox>
+              <b-checkbox v-if="!t.isPaid" @change="togglePaid(t.id)" class="text-danger clickable"><h4>$</h4></b-checkbox>
               <h4 v-else class="text-success">$</h4>
             </div>
             <hr>
@@ -43,14 +47,15 @@ export default {
   mounted() {
     if (!this.$store.state.user.id) {
       this.$router.push({ name: "login", path: "/login" });
-      return
+      return;
     }
     this.$store.dispatch("getTimes", this.e.id);
   },
   data() {
     return {
       hours: 0,
-      dataTimes: {}
+      dataTimes: {},
+      hasTimes: false
     };
   },
   computed: {
@@ -77,14 +82,28 @@ export default {
       }
       this.hours = hrs.toFixed(2);
     },
+    togglePaid(id) {
+      if (this.dataTimes[id]) {
+        delete this.dataTimes[id]
+        let times = Object.values(this.dataTimes)
+        if (!times.length) this.hasTimes = false
+      }
+      else {
+        this.dataTimes[id] = id
+        this.hasTimes = true
+      }
+    },
     confirmPaid() {
-      //get a template here for the confirm message
+      let times = Object.values(this.dataTimes)
+      if (!times.length) return
+      if (confirm(`Are you sure you want to set ${times.length} time${times.length > 1 ? 's' : ''} as paid?`)) {
+        this.$store.dispatch('setTimesPaid', times)
+      }
     }
   },
   watch: {
     times(val) {
       this.total();
-      this.setData();
     }
   }
 };
@@ -92,6 +111,6 @@ export default {
 <style>
 .actions {
   position: absolute;
-  top: 23vh;
+  top: 22vh;
 }
 </style>
