@@ -9,12 +9,12 @@
                 <button @click="home()" class="btn btn-outline-dark">home</button>
             </div>
             <div class="col col-md-10 offset-md-1 text-center">
-              <h4>{{hours}} hrs worked</h4>
+              <h4>{{hours}} hrs need paid</h4>
             </div>
         </div>
         <div class="actions row w-100">
           <div class="col-6 d-flex justify-content-center">
-            <button class="btn btn-dark">Only Unpaid</button>
+            <button @click="display ? display = '' : display = 'd-none'" class="btn btn-dark">{{displayBTN}}</button>
           </div>
           <div class="col-6 d-flex justify-content-center">
             <button @click="confirmPaid()" :class="hasTimes ? 'btn btn-dark' : 'd-none'">Confirm Paid</button>
@@ -26,7 +26,7 @@
           </div>
         </div>
         <div v-else class="row h65 mt5 justify-content-around">
-          <div v-for="t in times" :key="t.id" :id="t.id" :class="t.isPaid ? 'col-10 offset-1 col-md-3 pb-5 paid' : 'col-10 offset-1 col-md-3 pb-5 unpaid'">
+          <div v-for="t in times" :key="t.id" :id="t.id" :class="t.isPaid ? `col-10 offset-1 col-md-3 pb-5 ${display}` : 'col-10 offset-1 col-md-3 pb-5'">
             <div class="d-flex justify-content-between align-items-center">
               <h2>{{new Date(t.clockIn).getMonth() + 1}}.{{new Date(t.clockIn).getDate()}}.{{new Date(t.clockIn).getFullYear()}}</h2>
               <b-checkbox v-if="!t.isPaid" @change="togglePaid(t.id)" class="text-danger clickable"><h4>$</h4></b-checkbox>
@@ -55,12 +55,14 @@ export default {
     return {
       hours: 0,
       dataTimes: {},
-      hasTimes: false
+      hasTimes: false,
+      display: '',
+      displayBTN: 'Only Unpaid'
     };
   },
   computed: {
     times() {
-      return this.$store.state.times;
+      return this.$store.state.timesObj;
     }
   },
   methods: {
@@ -69,15 +71,14 @@ export default {
     },
     total() {
       let hrs = 0;
-      for (let i = 0; i < this.times.length; i++) {
-        let t = this.times[i];
-        if (!t.clockOut) continue;
+      for (let id in this.times) {
+        if (!this.times[id].clockOut || this.times[id].isPaid) continue;
         let out =
-          new Date(t.clockOut).getHours() +
-          new Date(t.clockOut).getMinutes() / 60;
+          new Date(this.times[id].clockOut).getHours() +
+          new Date(this.times[id].clockOut).getMinutes() / 60;
         let myIn =
-          new Date(t.clockIn).getHours() +
-          new Date(t.clockIn).getMinutes() / 60;
+          new Date(this.times[id].clockIn).getHours() +
+          new Date(this.times[id].clockIn).getMinutes() / 60;
         hrs += Math.abs(myIn - out); //VERY IMPORTANT! THIS ONLY CALCULATES CORRECTLY SO LONG AS NOT OVERNIGHT SHIFTS
       }
       this.hours = hrs.toFixed(2);
@@ -98,12 +99,16 @@ export default {
       if (!times.length) return
       if (confirm(`Are you sure you want to set ${times.length} time${times.length > 1 ? 's' : ''} as paid?`)) {
         this.$store.dispatch('setTimesPaid', times)
+        this.dataTimes = {}
       }
     }
   },
   watch: {
     times(val) {
       this.total();
+    },
+    display(val) {
+      this.display ? this.displayBTN = 'All Times' : this.displayBTN = 'Only Unpaid'
     }
   }
 };

@@ -23,7 +23,8 @@ export default new Vuex.Store({
     user: {},
     business: {},
     employees: [],
-    times: {},
+    timesObj: {},
+    timesArr: [],
     atBusiness: false
   },
   mutations: {
@@ -50,11 +51,15 @@ export default new Vuex.Store({
       state.employees = employees
     },
     setTimes(state, times) {
+      if (state.user.isEmployee) {
+        state.timesArr = times
+        return
+      }
       let obj = {}
       times.forEach(t => {
         obj[t.id] = t
       })  
-      state.times = obj
+      state.timesObj = obj
     },
     setDistance(state, distance) {
       if (distance <= .25) {
@@ -64,14 +69,26 @@ export default new Vuex.Store({
       }
     },
     addTime(state, time) {
-      Vue.set(state.times, `${time.id}`, time)
+      if (state.user.isEmployee) {
+        state.timesArr.push(time)
+        return
+      }
+      Vue.set(state.timesObj, `${time.id}`, time)
     },
     updateTime(state, time) {
-      state.times[time.id] = time
+      if (state.user.isEmployee) {
+        state.timesArr.pop()
+        state.timesArr.push(time)
+        return
+      }
+      state.timesObj[time.id] = time
     },
     setTimesPaid(state, payload) {
-      payload.forEach(t => {
-        state.times[t.id] = t
+      payload.forEach(id => {
+        let time = state.timesObj[id]
+        Vue.delete(state.timesObj, `${time.id}`)
+        time.isPaid = true
+        Vue.set(state.timesObj, `${time.id}`, time)
       })
     }
   },
@@ -211,20 +228,24 @@ export default new Vuex.Store({
     },
     clockOut({commit}, payload) {
       api.post("employee/clockout", payload)
-        .then(res => commit('updateTime', res.data))
+        .then(res => commit('updateTime', payload))
         .catch(e => console.error(e))
     },
     //
     //MANAGER DISPATCHES W/ TIMES
     //
     setTimesPaid({commit}, payload) {
+      let count = payload.length
       let successes = []
       payload.forEach(id => {
-        api.put('', id)
-          .then(() => successes.push(id))
+        api.put(`${id}`)
+          .then(() => {
+            successes.push(id)
+            count--
+            if (!count) commit('setTimesPaid', successes)
+          })
           .catch(e => console.error(e))
       })
-      commit('setTimesPaid', successes)
     }
   }
 })

@@ -75,7 +75,6 @@
   </div>
 </template>
 <script>
-let date = new Date();
 export default {
   name: "home",
   mounted() {
@@ -101,7 +100,7 @@ export default {
       return this.$store.state.employees;
     },
     times() {
-      return this.$store.state.times;
+      return this.$store.state.timesArr;
     },
     atBusiness() {
       return this.$store.state.atBusiness;
@@ -124,13 +123,12 @@ export default {
       let obj = {
         employeeId: this.user.id,
         businessId: this.business.id,
-        clockIn: date.getTime()
+        clockIn: new Date().getTime()
       };
       this.$store.dispatch("clockIn", obj);
     },
     clockOut(time) {
-      time.clockOut = date.getTime()
-      date.set
+      time.clockOut = new Date().getTime()
       this.$store.dispatch("clockOut", time)
     }
   }

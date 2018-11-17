@@ -71,8 +71,8 @@ namespace time.Controllers
             return _repo.GetAllTimesForEmployee(employeeId);
         }
 
-        [HttpPut]
-        public bool timeIsPaid([FromBody] int timeId) {
+        [HttpPut("{timeId}")]
+        public bool timeIsPaid([FromRoute] int timeId) {
             return _repo.timeIsPaid(timeId);
         }
 
